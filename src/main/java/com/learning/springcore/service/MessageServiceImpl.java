@@ -2,6 +2,7 @@ package com.learning.springcore.service;
 
 import com.learning.springcore.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -9,13 +10,21 @@ public class MessageServiceImpl implements MessageService {
 
     // ---方式一：字段注入---
     @Autowired
+    @Qualifier("fileMessageRepo")
     private MessageRepository repoField;
 
     // ---方式二：Setter注入---
     private MessageRepository repoSetter;
 
+    private final MessageRepository messageRepository ;
+
+    public MessageServiceImpl(@Qualifier("dbMessageRepo") MessageRepository messageRepository){
+        System.out.println("MessageServiceImpl Constructor: Injecting MessageRepository: " + messageRepository.getClass().getName());
+        this.messageRepository = messageRepository;
+    }
+
     @Autowired
-    public void setRepoSetter(MessageRepository repoSetter) {
+    public void setRepoSetter(@Qualifier("fileMessageRepo")MessageRepository repoSetter) {
         System.out.println("Injecting dependency via Setter for repoSetter ...");
         this.repoSetter = repoSetter;
     }
@@ -35,10 +44,12 @@ public class MessageServiceImpl implements MessageService {
             System.out.println("Setter repoSetter is null");
         }
         System.out.println("----------------------------------------------------");
+        System.out.println("Message from injected repository:" + messageRepository.getMessage());
     }
 
-    // 添加构造函数，观察注入时机
-    public MessageServiceImpl()  {
-        System.out.println("MessageServiceImpl Constructor called. repoField is "+repoField+",repoSetter is"+repoSetter);
-    }
+//    // 添加构造函数，观察注入时机
+//    public MessageServiceImpl(MessageRepository messageRepository)  {
+//        this.messageRepository = messageRepository;
+//        System.out.println("MessageServiceImpl Constructor called. repoField is "+repoField+",repoSetter is"+repoSetter);
+//    }
 }
