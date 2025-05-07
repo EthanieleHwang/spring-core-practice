@@ -10,7 +10,7 @@ public class MessageServiceImpl implements MessageService {
 
     // ---方式一：字段注入---
     @Autowired
-    @Qualifier("fileMessageRepo")
+
     private MessageRepository repoField;
 
     // ---方式二：Setter注入---
@@ -18,13 +18,13 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository ;
 
-    public MessageServiceImpl(@Qualifier("dbMessageRepo") MessageRepository messageRepository){
+    public MessageServiceImpl( MessageRepository messageRepository){
         System.out.println("MessageServiceImpl Constructor: Injecting MessageRepository: " + messageRepository.getClass().getName());
         this.messageRepository = messageRepository;
     }
 
     @Autowired
-    public void setRepoSetter(@Qualifier("fileMessageRepo")MessageRepository repoSetter) {
+    public void setRepoSetter(MessageRepository repoSetter) {
         System.out.println("Injecting dependency via Setter for repoSetter ...");
         this.repoSetter = repoSetter;
     }
