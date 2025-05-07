@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+
 @Service
 public class MessageServiceImpl implements MessageService {
 
     // ---方式一：字段注入---
     @Autowired
-
+    @Qualifier("fileMessageRepo")
     private MessageRepository repoField;
 
     // ---方式二：Setter注入---
@@ -18,13 +20,13 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository ;
 
-    public MessageServiceImpl( MessageRepository messageRepository){
+    public MessageServiceImpl(@Qualifier("fileMessageRepo") MessageRepository messageRepository){
         System.out.println("MessageServiceImpl Constructor: Injecting MessageRepository: " + messageRepository.getClass().getName());
         this.messageRepository = messageRepository;
     }
 
     @Autowired
-    public void setRepoSetter(MessageRepository repoSetter) {
+    public void setRepoSetter(@Qualifier("fileMessageRepo") MessageRepository repoSetter) {
         System.out.println("Injecting dependency via Setter for repoSetter ...");
         this.repoSetter = repoSetter;
     }
@@ -46,7 +48,11 @@ public class MessageServiceImpl implements MessageService {
         System.out.println("----------------------------------------------------");
         System.out.println("Message from injected repository:" + messageRepository.getMessage());
     }
-
+    @PostConstruct
+    public void initialize() {
+        System.out.println("00000[Bean Lifecycle] MessageServiceImpl: @PostConstruct : Dependencies injected (if any),ready for initialization!");
+        System.out.println("00000[Bean Lifecycle - MessageServiceImpl] Initializing resources...");
+    }
 //    // 添加构造函数，观察注入时机
 //    public MessageServiceImpl(MessageRepository messageRepository)  {
 //        this.messageRepository = messageRepository;

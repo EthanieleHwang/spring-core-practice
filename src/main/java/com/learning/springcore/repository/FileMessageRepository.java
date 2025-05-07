@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 @Repository("fileMessageRepo")
-@Primary
+//@Primary
 public class FileMessageRepository implements MessageRepository{
     @Override
     public String getMessage() {
