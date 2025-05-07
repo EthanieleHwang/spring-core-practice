@@ -1,5 +1,6 @@
 package com.learning.springcore;
 
+import com.learning.springcore.beans.PrototypeBean;
 import com.learning.springcore.config.AppConfig;
 import com.learning.springcore.service.GreetingService;
 import com.learning.springcore.service.MessageService;
@@ -8,16 +9,16 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class MainApp {
     public static void main(String[] args) {
-//        System.out.println("--- Spring IoC Container Demo ---");
-//
-//        System.out.println("\nStep 1: Create Spring ApplicationContext (IoC Container) ...");
-//        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-//        System.out.println("IoC Container created successfully!");
-//
-//        System.out.println("\nStep 2: Retrieve the GreetingService  bean from the IoC Container ...");
-//
-//        GreetingService greetingServiceByType = context.getBean(GreetingService.class);
-//        System.out.println("Bean retrieved by type:"+greetingServiceByType);
+        System.out.println("--- Spring IoC Container Demo ---");
+
+        System.out.println("\nStep 1: Create Spring ApplicationContext (IoC Container) ...");
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        System.out.println("IoC Container created successfully!");
+
+        System.out.println("\nStep 2: Retrieve the GreetingService  bean from the IoC Container ...");
+
+        GreetingService greetingServiceByType = context.getBean(GreetingService.class);
+        System.out.println("Bean retrieved by type:"+greetingServiceByType);
 //
 //        //2.按bean名称获取
 //        Object beanByNameObject = context.getBean("greetingService");
@@ -51,27 +52,46 @@ public class MainApp {
 //        ((AnnotationConfigApplicationContext) context).close();
 //        System.out.println("Container closed successfully!");
 //        System.out.println("\n--- End of Spring IoC Container Demo ---");
-        System.out.println("1. Creating Spring IoC Container...");
-        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        System.out.println("   Container created.");
-
-        System.out.println("\n2. Getting the MessageService bean...");
-        // 获取接口类型的 Bean，Spring 会找到它的实现类 MessageServiceImpl
-        MessageService messageService = context.getBean(MessageService.class);
-        System.out.println("   Got bean instance: " + messageService);
-
-        System.out.println("\n3. Calling the bean's method...");
-        messageService.printMessage(); // 调用方法，触发内部依赖的使用
+//        System.out.println("1. Creating Spring IoC Container...");
+//        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+//        System.out.println("   Container created.");
+//
+//        System.out.println("\n2. Getting the MessageService bean...");
+//        // 获取接口类型的 Bean，Spring 会找到它的实现类 MessageServiceImpl
+//        MessageService messageService = context.getBean(MessageService.class);
+//        System.out.println("   Got bean instance: " + messageService);
+//
+//        System.out.println("\n3. Calling the bean's method...");
+//        messageService.printMessage(); // 调用方法，触发内部依赖的使用
 
         // 验证获取的是同一个 Repository 实例 (因为 Repository 默认也是 Singleton)
         // (需要先修改 MessageServiceImpl，添加 getter 方法暴露 repoField 和 repoSetter)
         // MessageRepository repo1 = messageService.getRepoField();
         // MessageRepository repo2 = messageService.getRepoSetter();
         // System.out.println("\nAre repoField and repoSetter the same instance? " + (repo1 == repo2)); // 预期 true
+//
+//        System.out.println("\n4. Closing the container...");
+//        ((AnnotationConfigApplicationContext) context).close();
+//        System.out.println("   Container closed.");
 
-        System.out.println("\n4. Closing the container...");
-        ((AnnotationConfigApplicationContext) context).close();
-        System.out.println("   Container closed.");
+        System.out.println("\n--- Testing Prototype Scope ---");
+        System.out.println("Requesting PrototypeBean instance A...");
+        PrototypeBean protoA = context.getBean(PrototypeBean.class);
+        protoA.showMessage();
 
+        System.out.println("\nRequesting PrototypeBean instance B...");
+        PrototypeBean protoB = context.getBean(PrototypeBean.class);
+        protoB.showMessage();
+
+        System.out.println("\nAre protoA and protoB the same instance? " + (protoA == protoB)); // 预期 false
+
+        //即使再次获取同一个原型Bean实例，Spring也会创建一个新的实例。
+        System.out.println("\nRequesting PrototypeBean instance C by name...");
+        PrototypeBean protoC =(PrototypeBean) context.getBean("prototypeBean");
+        protoC.showMessage();
+        System.out.println("\nAre protoA and protoC the same instance? " + (protoA == protoC)); // 预期 false
+        System.out.println("\nAre protoB and protoC the same instance? " + (protoB == protoC)); // 预期 false
+
+        System.out.println("---------------------------------");
     }
 }
